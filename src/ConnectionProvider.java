@@ -7,7 +7,7 @@ public class ConnectionProvider {
     public static Connection getCon() {
         // --- YOUR DATABASE DETAILS ---
         // The host where your database is running. 'localhost' is the default for a local server.
-        String host = "localhost";
+        String host = "192.168.1.4";
         
         // The port number. 3306 is the default for MariaDB/MySQL.
         String port = "3306";
