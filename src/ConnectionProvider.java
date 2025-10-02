@@ -17,10 +17,10 @@ public class ConnectionProvider {
         String dbName = "bloodbank"; // <-- IMPORTANT: Change this to your actual database name
         
         // Your MariaDB username. 'root' is common for local development.
-        String username = "root"; // <-- Change if you created a different user
+        String username = "bd_user"; // <-- Change if you created a different user
         
         // Your MariaDB password.
-        String password = "11"; // <-- IMPORTANT: Change this to your root password
+        String password = "0022"; // <-- IMPORTANT: Change this to your root password
 
         // --- The Connection URL for MariaDB ---
         // Format: jdbc:mariadb://<host>:<port>/<databaseName>
