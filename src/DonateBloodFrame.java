@@ -181,7 +181,7 @@ public class DonateBloodFrame extends JFrame {
     private void submitDonation(String bloodGroup, String weight, String height,
                                 String hemoglobin, String bp, String pulse,
                                 String bmi, boolean isEligible) {
-        try (Connection conn = DBConnection.getConnection()) {
+        try (Connection conn = ConnectionProvider.getCon()) {
             String sql = "INSERT INTO donors (username, full_name, age, blood_group, " +
                     "weight_kg, height_cm, hemoglobin_level, blood_pressure, " +
                     "pulse_rate, bmi, is_eligible) " +

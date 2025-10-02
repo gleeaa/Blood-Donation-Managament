@@ -40,7 +40,7 @@ public class ProfileFrame extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
-        try (Connection conn = DBConnection.getConnection()) {
+        try (Connection conn = ConnectionProvider.getCon()) {
             String sql = "SELECT * FROM users WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, currentUser);

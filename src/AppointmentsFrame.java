@@ -92,7 +92,7 @@ public class AppointmentsFrame extends JFrame {
             return;
         }
 
-        try (Connection con = DBConnection.getConnection()) {
+        try (Connection con = ConnectionProvider.getCon()) {
             String query = "INSERT INTO appointments (username, full_name, appointment_date, " +
                     "appointment_time, location, reason, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -157,7 +157,7 @@ public class AppointmentsFrame extends JFrame {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() throws Exception {
-                try (Connection con = DBConnection.getConnection()) {
+                try (Connection con = ConnectionProvider.getCon()) {
                     String query = "SELECT id, appointment_date, appointment_time, " +
                             "location, reason, status FROM appointments " +
                             "WHERE username = ? ORDER BY appointment_date DESC";
@@ -219,7 +219,7 @@ public class AppointmentsFrame extends JFrame {
 
         int appointmentId = (int) tableModel.getValueAt(selectedRow, 0);
 
-        try (Connection con = DBConnection.getConnection()) {
+        try (Connection con = ConnectionProvider.getCon()) {
             String query = "UPDATE appointments SET status = 'Cancelled' WHERE id = ?";
             try (PreparedStatement ps = con.prepareStatement(query)) {
                 ps.setInt(1, appointmentId);

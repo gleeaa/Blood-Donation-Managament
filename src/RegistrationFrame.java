@@ -138,7 +138,7 @@ public class RegistrationFrame extends JFrame {
 
         // Button Action - Insert into database
         registerButton.addActionListener((ActionEvent e) -> {
-            try (Connection conn = DBConnection.getConnection()) {
+            try (Connection conn = ConnectionProvider.getCon()) {
                 String sql = "INSERT INTO users (full_name, email, mobile, age, height_cm, weight_kg, blood_group, gender, username, password) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

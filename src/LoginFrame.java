@@ -160,7 +160,7 @@ public class LoginFrame extends JFrame {
                 return;
             }
 
-            try (Connection conn = DBConnection.getConnection()) {
+            try (Connection conn = ConnectionProvider.getCon()) {
                 String sql = "SELECT full_name, age FROM users WHERE username = ? AND password = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setString(1, username);
