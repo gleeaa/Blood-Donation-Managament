@@ -7,24 +7,24 @@ public class ConnectionProvider {
     public static Connection getCon() {
         // --- YOUR DATABASE DETAILS ---
         // The host where your database is running. 'localhost' is the default for a local server.
-        String host = "192.168.1.4";
+        String host = "127.0.0.1";
         
         // The port number. 3306 is the default for MariaDB/MySQL.
-        String port = "3306";
+        String port = "3307";
         
         // The name of the database you created for this project.
         // Make sure you have created this database in MariaDB first!
-        String dbName = "bloodbank"; // <-- IMPORTANT: Change this to your actual database name
+        String dbName = "blood_donation_db"; // <-- IMPORTANT: Change this to your actual database name
         
         // Your MariaDB username. 'root' is common for local development.
-        String username = "bd_user"; // <-- Change if you created a different user
+        String username = "root"; // <-- Change if you created a different user
         
         // Your MariaDB password.
-        String password = "0022"; // <-- IMPORTANT: Change this to your root password
+        String password = "Alpha@123"; // <-- IMPORTANT: Change this to your root password
 
         // --- The Connection URL for MariaDB ---
         // Format: jdbc:mariadb://<host>:<port>/<databaseName>
-        String connectionUrl = "jdbc:mariadb://" + host + ":" + port + "/" + dbName;
+        String connectionUrl = "jdbc:mariadb://127.0.0.1:3307/blood_donation_db";
 
         try {
             // Load the MariaDB JDBC driver class.

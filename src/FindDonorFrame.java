@@ -47,7 +47,7 @@ public class FindDonorFrame extends JFrame {
         String selectedBloodGroup = (String) bloodGroupBox.getSelectedItem();
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/blood_donation", "root", "parth");
+            Connection con = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3307/blood_donation_db", "root", "Alpha@123");
             String query = "SELECT full_name AS 'Name',  age AS 'Age', donation_date AS 'Donation Date' FROM donors WHERE blood_group = ?";
 
             PreparedStatement ps = con.prepareStatement(query);
