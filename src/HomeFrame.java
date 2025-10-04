@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Vector; // Needed for table logic in MyDonationsPanel
 
 public class HomeFrame extends JFrame {
 
@@ -21,10 +22,9 @@ public class HomeFrame extends JFrame {
     private Map<String, Color> bloodTypeColors;
     private JLabel clockLabel;
     private Timer clockTimer;
-    private JProgressBar donationProgressBar;
     private SimpleDateFormat timeFormat;
     private JPanel mainPanel;
-
+    
     // Constants for styling
     private static final Color PRIMARY_COLOR = new Color(139, 0, 0);
     private static final Color SECONDARY_COLOR = new Color(240, 248, 255);
@@ -68,7 +68,6 @@ public class HomeFrame extends JFrame {
 
         // Set custom icon if available
         try {
-            // Replace with actual icon path if available
             // setIconImage(new ImageIcon("path/to/icon.png").getImage());
         } catch (Exception e) {
             System.err.println("Could not load application icon: " + e.getMessage());
@@ -349,27 +348,22 @@ public class HomeFrame extends JFrame {
         // Blood Availability Panel
         JPanel bloodAvailPanel = createBloodAvailabilityPanel();
 
-        // Recent Activity Table with filter
-        JPanel activityPanel = createActivityPanel();
-
         // Upcoming Events Panel
         JPanel eventsPanel = createUpcomingEventsPanel();
-
+        
         // Add everything to main panel with some space between
         panel.add(headerPanel);
         panel.add(statsPanel);
         panel.add(Box.createVerticalStrut(20));
 
         // Create a split panel for blood availability and upcoming events
+        // This panel now takes up the remaining space
         JPanel middlePanel = new JPanel(new GridLayout(1, 2, 15, 0));
         middlePanel.setOpaque(false);
         middlePanel.add(bloodAvailPanel);
         middlePanel.add(eventsPanel);
         panel.add(middlePanel);
-
-        panel.add(Box.createVerticalStrut(20));
-        panel.add(activityPanel);
-
+        
         // Create a scrollable panel that takes all available space
         JScrollPane scrollPane = new JScrollPane(panel);
         scrollPane.setBorder(null);
@@ -497,7 +491,7 @@ public class HomeFrame extends JFrame {
         JLabel progressLabel = new JLabel("Overall Donation Target:");
         progressLabel.setFont(REGULAR_FONT);
 
-        donationProgressBar = new JProgressBar(0, 100);
+        JProgressBar donationProgressBar = new JProgressBar(0, 100);
         donationProgressBar.setValue(65);
         donationProgressBar.setStringPainted(true);
         donationProgressBar.setForeground(PRIMARY_COLOR);
@@ -554,69 +548,9 @@ public class HomeFrame extends JFrame {
 
         return panel;
     }
-
-    private JPanel createActivityPanel() {
-        JPanel panel = new JPanel(new BorderLayout(0, 10));
-        panel.setOpaque(false);
-        panel.setBorder(new CompoundBorder(
-                new LineBorder(new Color(220, 220, 220), 1),
-                new EmptyBorder(15, 15, 15, 15)
-        ));
-
-        // Header with title and filter
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setOpaque(false);
-
-        JLabel titleLabel = new JLabel("Recent Activities");
-        titleLabel.setFont(SUBTITLE_FONT);
-
-        JComboBox<String> filterCombo = new JComboBox<>(new String[] {
-                "All Activities", "Donations", "Requests", "Appointments"
-        });
-        filterCombo.setFont(SMALL_FONT);
-
-        headerPanel.add(titleLabel, BorderLayout.WEST);
-        headerPanel.add(filterCombo, BorderLayout.EAST);
-
-        // Table data
-        String[] columns = {"Date", "Activity", "Status", "Details"};
-        Object[][] data = {
-                {"2023-05-15", "Blood Donation", "Completed", "A+ Blood Type"},
-                {"2023-04-28", "Blood Request", "Fulfilled", "AB- Blood Type"},
-                {"2023-04-10", "Donation Camp", "Registered", "City Hospital"},
-                {"2023-03-22", "Blood Donation", "Completed", "O+ Blood Type"}
-        };
-
-        // Create a custom table model
-        DefaultTableModel model = new DefaultTableModel(data, columns) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-
-        JTable activityTable = new JTable(model);
-        activityTable.setFont(REGULAR_FONT);
-        activityTable.setRowHeight(30);
-        activityTable.setShowVerticalLines(false);
-        activityTable.setGridColor(new Color(230, 230, 230));
-
-        // Set custom renderer for status column
-        activityTable.getColumnModel().getColumn(2).setCellRenderer(new StatusRenderer());
-
-        // Add "View" button in last column
-        activityTable.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
-        activityTable.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor(new JCheckBox()));
-
-        JScrollPane tableScroll = new JScrollPane(activityTable);
-        tableScroll.setBorder(BorderFactory.createEmptyBorder());
-
-        panel.add(headerPanel, BorderLayout.NORTH);
-        panel.add(tableScroll, BorderLayout.CENTER);
-
-        return panel;
-    }
-
+    
+    // Removed: createActivityPanel() logic
+    
     private JPanel createUpcomingEventsPanel() {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.setOpaque(false);
@@ -783,31 +717,31 @@ public class HomeFrame extends JFrame {
                 DonateBloodFrame donateFrame = new DonateBloodFrame(currentUser, currentFullName, currentAge);
                 styleFrame(donateFrame);
                 donateFrame.setVisible(true);
-                return; // Return early without clearing content
+                return; 
 
             case "Request Blood":
                 RequestBloodFrame requestFrame = new RequestBloodFrame();
                 styleFrame(requestFrame);
                 requestFrame.setVisible(true);
-                return; // Return early without clearing content
+                return; 
 
             case "Find Donors":
                 FindDonorFrame donorFrame = new FindDonorFrame();
                 styleFrame(donorFrame);
                 donorFrame.setVisible(true);
-                return; // Return early without clearing content
+                return; 
 
             case "Appointments":
                 AppointmentsFrame appointmentsFrame = new AppointmentsFrame(currentUser, currentFullName);
                 styleFrame(appointmentsFrame);
                 appointmentsFrame.setVisible(true);
-                return; // Return early without clearing content
+                return; 
 
             case "My Profile":
                 ProfileFrame profileFrame = new ProfileFrame(currentUser);
                 styleFrame(profileFrame);
                 profileFrame.setVisible(true);
-                return; // Return early without clearing content
+                return; 
         }
 
         // For other tabs that need to update the content panel
@@ -1008,9 +942,7 @@ public class HomeFrame extends JFrame {
         JTable donationTable = new JTable(model);
         donationTable.setFont(REGULAR_FONT);
         donationTable.setRowHeight(30);
-        donationTable.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
-        donationTable.getColumnModel().getColumn(4).setCellEditor(new ButtonEditor(new JCheckBox()));
-
+        
         JScrollPane tablePane = new JScrollPane(donationTable);
         tablePane.setBorder(BorderFactory.createEmptyBorder());
 
@@ -1081,10 +1013,7 @@ public class HomeFrame extends JFrame {
         JTable activeTable = new JTable(activeModel);
         activeTable.setFont(REGULAR_FONT);
         activeTable.setRowHeight(30);
-        activeTable.getColumnModel().getColumn(5).setCellRenderer(new StatusRenderer());
-        activeTable.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
-        activeTable.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
-
+        
         JScrollPane activePane = new JScrollPane(activeTable);
         activePane.setBorder(BorderFactory.createEmptyBorder());
 
@@ -1116,9 +1045,6 @@ public class HomeFrame extends JFrame {
         JTable pastTable = new JTable(pastModel);
         pastTable.setFont(REGULAR_FONT);
         pastTable.setRowHeight(30);
-        pastTable.getColumnModel().getColumn(5).setCellRenderer(new StatusRenderer());
-        pastTable.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer());
-        pastTable.getColumnModel().getColumn(6).setCellEditor(new ButtonEditor(new JCheckBox()));
 
         JScrollPane pastPane = new JScrollPane(pastTable);
         pastPane.setBorder(BorderFactory.createEmptyBorder());
@@ -1134,7 +1060,9 @@ public class HomeFrame extends JFrame {
         newRequestButton.setFocusPainted(false);
         newRequestButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         newRequestButton.addActionListener(e -> {
-            new RequestBloodFrame().setVisible(true);
+            // Assuming RequestBloodFrame exists
+            // new RequestBloodFrame().setVisible(true);
+            JOptionPane.showMessageDialog(this, "New Request frame coming soon.", "Information", JOptionPane.INFORMATION_MESSAGE);
         });
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -1183,7 +1111,9 @@ public class HomeFrame extends JFrame {
     private void openDonateBloodFrame() {
         // Use the data we already have from login
         if (currentUser != null && currentFullName != null) {
-            new DonateBloodFrame(currentUser, currentFullName, currentAge).setVisible(true);
+            // Assuming DonateBloodFrame exists
+            // new DonateBloodFrame(currentUser, currentFullName, currentAge).setVisible(true);
+            JOptionPane.showMessageDialog(this, "Donate Blood frame coming soon.", "Information", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this,
                     "User data not available",
@@ -1207,14 +1137,11 @@ public class HomeFrame extends JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 // Actual data loading/refresh operations would go here
-                // For example:
-                // refreshDashboardData();
                 return null;
             }
 
             @Override
             protected void done() {
-                // Optional: Update UI after refresh completes
                 try {
                     // Recreate dashboard with fresh data if needed
                     dashboardPanel = createDashboardPanel();
@@ -1231,134 +1158,7 @@ public class HomeFrame extends JFrame {
         refreshWorker.execute();
     }
 
-    // Custom renderers and editors for table buttons and status cells
-
-    // Status renderer for coloring status cells
-    private class StatusRenderer extends DefaultTableCellRenderer {
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-
-            Component c = super.getTableCellRendererComponent(
-                    table, value, isSelected, hasFocus, row, column);
-
-            String status = value.toString();
-
-            // Set text and background color based on status
-            if (status.equals("Completed") || status.equals("Fulfilled") || status.equals("Sufficient")) {
-                c.setForeground(new Color(40, 167, 69));
-                setIcon(new ImageIcon()); // Add green check icon if available
-            } else if (status.equals("Pending") || status.equals("Registered") || status.equals("Moderate")) {
-                c.setForeground(new Color(255, 193, 7));
-                setIcon(new ImageIcon()); // Add pending icon if available
-            } else if (status.equals("Cancelled") || status.equals("URGENT NEED")) {
-                c.setForeground(new Color(220, 53, 69));
-                setIcon(new ImageIcon()); // Add warning icon if available
-            } else {
-                c.setForeground(table.getForeground());
-                setIcon(null);
-            }
-
-            // Apply styles
-            setHorizontalAlignment(SwingConstants.CENTER);
-
-            return c;
-        }
-    }
-
-    // Button renderer for showing buttons in tables
-    private class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
-            setOpaque(true);
-            setFocusPainted(false);
-            setBorderPainted(true);
-            setForeground(PRIMARY_COLOR); // Default color
-            setBackground(Color.WHITE);  // Default background
-            setFont(SMALL_FONT);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            setText(value.toString());
-
-            // Adjust colors based on selection
-            if (isSelected) {
-                setBackground(table.getSelectionBackground());
-                setForeground(table.getSelectionForeground());
-            } else {
-                setBackground(Color.WHITE);
-                setForeground(PRIMARY_COLOR);
-            }
-
-            return this;
-        }
-    }
-
-    // Button editor for handling clicks on table buttons
-    private class ButtonEditor extends DefaultCellEditor {
-        private JButton button;
-        private String label;
-        private boolean isPushed;
-
-        public ButtonEditor(JCheckBox checkBox) {
-            super(checkBox);
-            button = new JButton();
-            button.setOpaque(true);
-            button.setFocusPainted(false);
-            button.setForeground(PRIMARY_COLOR);
-            button.setBackground(Color.WHITE);
-            button.setFont(SMALL_FONT);
-
-            button.addActionListener(e -> fireEditingStopped());
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int column) {
-            label = (value == null) ? "" : value.toString();
-            button.setText(label);
-            button.setForeground(isSelected ? table.getSelectionForeground() : PRIMARY_COLOR);
-            button.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
-            isPushed = true;
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            if (isPushed) {
-                // Handle button click based on the label
-                switch (label) {
-                    case "View":
-                        JOptionPane.showMessageDialog(button,
-                                "Details view coming soon!",
-                                "Information",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        break;
-                    case "Cancel":
-                        int option = JOptionPane.showConfirmDialog(button,
-                                "Are you sure you want to cancel this request?",
-                                "Confirm Cancellation",
-                                JOptionPane.YES_NO_OPTION);
-                        if (option == JOptionPane.YES_OPTION) {
-                            JOptionPane.showMessageDialog(button,
-                                    "Request cancelled successfully!",
-                                    "Success",
-                                    JOptionPane.INFORMATION_MESSAGE);
-                        }
-                        break;
-                }
-            }
-            isPushed = false;
-            return label;
-        }
-
-        @Override
-        public boolean stopCellEditing() {
-            isPushed = false;
-            return super.stopCellEditing();
-        }
-    }
+    // Custom renderers and editors removed: StatusRenderer, ButtonRenderer, ButtonEditor
 
     public static void main(String[] args) {
         try {
