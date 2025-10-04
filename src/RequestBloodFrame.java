@@ -239,7 +239,7 @@ public class RequestBloodFrame extends JFrame {
 
         // Process submission
         try (Connection con = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/blood_donation", "root", "your_password")) {
+                "jdbc:mariadb://127.0.0.1:3307/blood_donation_db", "root", "Alpha@123")) {
 
             String query = "INSERT INTO blood_requests (full_name, email, mobile, blood_group, " +
                     "units_required, hospital_name, address, request_date, status) " +

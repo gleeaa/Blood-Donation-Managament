@@ -388,7 +388,7 @@ public class HomeFrame extends JFrame {
         statsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
         String[] stats = {"Total Donations", "Blood Requests", "Available Donors", "Upcoming Camps"};
-        String[] values = {"142", "28", "64", "3"};
+        String[] values = {"64", "2", "4", "3"};
         String[] icons = {"📊", "🩸", "👥", "🏕️"};
         String[] trends = {"+12%", "+5%", "-3%", "0%"};
 
