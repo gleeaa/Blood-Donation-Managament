@@ -636,25 +636,25 @@ public class HomeFrame extends JFrame {
         // Add some sample events
         eventsContainer.add(createEventCard(
                 "Blood Donation Drive",
-                "2023-06-15",
-                "09:00 AM - 05:00 PM",
-                "City Central Hospital"
+                "10-10-2025",
+                "09:00 AM - 12:00 PM",
+                "LBS College of Engineering"
         ));
         eventsContainer.add(Box.createVerticalStrut(10));
 
         eventsContainer.add(createEventCard(
                 "Community Awareness Program",
-                "2023-06-22",
+                "13-10-2025",
                 "10:00 AM - 01:00 PM",
-                "Community Center"
+                "Aster Mims Kasaragod"
         ));
         eventsContainer.add(Box.createVerticalStrut(10));
 
         eventsContainer.add(createEventCard(
                 "Blood Donation Training",
-                "2023-07-05",
+                "25-10-2025",
                 "02:00 PM - 04:00 PM",
-                "Medical College Auditorium"
+                "Muliyar Primary Health Center"
         ));
 
         // Add a "View All Events" button
