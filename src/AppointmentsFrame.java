@@ -49,22 +49,16 @@ public class AppointmentsFrame extends JFrame {
         // Location
         JLabel locationLabel = new JLabel("Location:");
         JComboBox<String> locationBox = new JComboBox<>(new String[]{
-                "Main Blood Center", "North Clinic", "South Hospital", "West Donation Center"
+                "Aster Mims Kasaragod", "CM Hospital", "Muliyar CHC", "Government College Kasaragod"
         });
-
-        // Reason
-        JLabel reasonLabel = new JLabel("Reason:");
-        JTextArea reasonArea = new JTextArea(4, 20);
-        reasonArea.setLineWrap(true);
-        reasonArea.setWrapStyleWord(true);
 
         // Book Button
         JButton bookBtn = new JButton("Book Appointment");
         bookBtn.addActionListener(e -> bookAppointment(
                 (Date) dateSpinner.getValue(),
                 (String) timeBox.getSelectedItem(),
-                (String) locationBox.getSelectedItem(),
-                reasonArea.getText()
+                (String) locationBox.getSelectedItem()
+                // Reason is now removed from the arguments
         ));
 
         // Layout
@@ -77,24 +71,22 @@ public class AppointmentsFrame extends JFrame {
         gbc.gridx = 0; gbc.gridy = 2; panel.add(locationLabel, gbc);
         gbc.gridx = 1; panel.add(locationBox, gbc);
 
-        gbc.gridx = 0; gbc.gridy = 3; panel.add(reasonLabel, gbc);
-        gbc.gridx = 1; panel.add(new JScrollPane(reasonArea), gbc);
-
-        gbc.gridx = 1; gbc.gridy = 4;
+        // NOTE: Previous lines for reasonLabel and reasonArea are removed.
+        
+        gbc.gridx = 1; gbc.gridy = 3; // Shifted up from gbc.gridy = 4
         panel.add(bookBtn, gbc);
 
         return panel;
     }
 
-    private void bookAppointment(Date date, String time, String location, String reason) {
-        if (reason.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter a reason for the appointment");
-            return;
-        }
+    // Updated method signature: removed String reason
+    private void bookAppointment(Date date, String time, String location) {
+        // Reason validation check is now removed.
 
         try (Connection con = ConnectionProvider.getCon()) {
+            // Updated query: removed 'reason' column and its placeholder
             String query = "INSERT INTO appointments (username, full_name, appointment_date, " +
-                    "appointment_time, location, reason, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    "appointment_time, location, status) VALUES (?, ?, ?, ?, ?, ?)";
 
             try (PreparedStatement ps = con.prepareStatement(query)) {
                 ps.setString(1, username);
@@ -102,8 +94,8 @@ public class AppointmentsFrame extends JFrame {
                 ps.setDate(3, new java.sql.Date(date.getTime()));
                 ps.setString(4, time);
                 ps.setString(5, location);
-                ps.setString(6, reason);
-                ps.setString(7, "Scheduled");
+                // NOTE: ps.setString(6, reason) is removed.
+                ps.setString(6, "Scheduled"); // Status is now parameter 6
 
                 int rowsAffected = ps.executeUpdate();
                 if (rowsAffected > 0) {
@@ -121,9 +113,9 @@ public class AppointmentsFrame extends JFrame {
     private JPanel createViewPanel() {
         JPanel panel = new JPanel(new BorderLayout());
 
-        // Table setup
+        // Table setup: Removed "Reason" column from table headers
         tableModel = new DefaultTableModel(
-                new String[]{"ID", "Date", "Time", "Location", "Reason", "Status"}, 0) {
+                new String[]{"ID", "Date", "Time", "Location", "Status"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Make table non-editable
@@ -158,8 +150,9 @@ public class AppointmentsFrame extends JFrame {
             @Override
             protected Void doInBackground() throws Exception {
                 try (Connection con = ConnectionProvider.getCon()) {
+                    // Updated query: removed 'reason' column from SELECT list
                     String query = "SELECT id, appointment_date, appointment_time, " +
-                            "location, reason, status FROM appointments " +
+                            "location, status FROM appointments " +
                             "WHERE username = ? ORDER BY appointment_date DESC";
 
                     try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -174,7 +167,6 @@ public class AppointmentsFrame extends JFrame {
                             row.add(rs.getDate("appointment_date"));
                             row.add(rs.getString("appointment_time"));
                             row.add(rs.getString("location"));
-                            row.add(rs.getString("reason"));
                             row.add(rs.getString("status"));
                             tableModel.addRow(row);
                         }
@@ -200,6 +192,8 @@ public class AppointmentsFrame extends JFrame {
         worker.execute();
     }
 
+    // ... (class and other methods)
+
     private void cancelAppointment(ActionEvent e) {
         int selectedRow = appointmentTable.getSelectedRow();
         if (selectedRow < 0) {
@@ -217,9 +211,27 @@ public class AppointmentsFrame extends JFrame {
             return;
         }
 
-        int appointmentId = (int) tableModel.getValueAt(selectedRow, 0);
+        // --- CRITICAL FIX HERE: Safely retrieve the Integer ID ---
+        Object idObject = tableModel.getValueAt(selectedRow, 0);
+        int appointmentId;
+
+        try {
+            // Ensure the object is converted to Integer first, then unboxed to int
+            appointmentId = (Integer) idObject; 
+        } catch (ClassCastException ex) {
+            // Fallback for extreme cases where it might be a Long or String
+            try {
+                appointmentId = Integer.parseInt(idObject.toString());
+            } catch (NumberFormatException nfe) {
+                JOptionPane.showMessageDialog(this, "Could not retrieve appointment ID. Data format error.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        // --- END CRITICAL FIX ---
+
 
         try (Connection con = ConnectionProvider.getCon()) {
+            // Verify query syntax and column name 'id'
             String query = "UPDATE appointments SET status = 'Cancelled' WHERE id = ?";
             try (PreparedStatement ps = con.prepareStatement(query)) {
                 ps.setInt(1, appointmentId);
@@ -228,12 +240,18 @@ public class AppointmentsFrame extends JFrame {
                 if (rowsAffected > 0) {
                     JOptionPane.showMessageDialog(this, "Appointment cancelled successfully");
                     loadAppointments(); // Refresh the view
+                } else {
+                    // This else block is vital for debugging!
+                    JOptionPane.showMessageDialog(this, 
+                        "Cancellation failed: No rows were updated. Check if the ID exists.", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this,
                     "Error cancelling appointment: " + ex.getMessage(),
                     "Database Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
         }
     }
 
