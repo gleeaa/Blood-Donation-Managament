@@ -26,7 +26,7 @@ public class PortalSelectionFrame extends JFrame {
         gbc.gridwidth = 2;
         mainPanel.add(titleLabel, gbc);
 
-        // --- HOSPITAL BUTTON ---
+       
         JButton hospitalButton = createStyledButton("HOSPITAL LOGIN", new Color(70, 130, 180));
         hospitalButton.addActionListener(e -> {
             dispose();
@@ -36,7 +36,7 @@ public class PortalSelectionFrame extends JFrame {
         gbc.gridwidth = 2;
         mainPanel.add(hospitalButton, gbc);
 
-        // --- USER BUTTON ---
+        
         JButton userButton = createStyledButton("USER / DONOR LOGIN", new Color(139, 0, 0));
         userButton.addActionListener(e -> {
             dispose();
